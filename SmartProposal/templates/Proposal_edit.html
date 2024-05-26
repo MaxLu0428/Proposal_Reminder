@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Edit My Proposal{% endblock %}
+
+{% block content %}
+    <h1 class="mt-5">Edit My Proposal</h1>
+    <form id="edit-form" method="post" action="{% url 'mymodel_edit' pk=obj.pk %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+    <div id="form-errors" class="text-danger"></div>
+{% endblock %}
+
+{% block extra_script %}
+<script>
+    $(document).ready(function() {
+        $('#edit-form').on('submit', function(event) {
+            event.preventDefault();  // 防止表單的默認提交行為
+            var $form = $(this);
+            var formData = $form.serialize();  // 序列化表單數據
+
+            $.ajax({
+                url: $form.attr('action'),  // 使用表單的 action 屬性作為請求 URL
+                type: $form.attr('method'),  // 使用表單的 method 屬性（通常是 POST）
+                data: formData,
+                success: function(response) {
+                    if (response.success) {
+                        // 如果成功，重定向到新 URL
+                        window.location.href = response.redirect_url;
+                    } else {
+                        // 如果失敗，顯示錯誤信息
+                        var errors = response.errors;
+                        var $errorsContainer = $('#form-errors');
+                        $errorsContainer.empty();
+                        for (var field in errors) {
+                            if (errors.hasOwnProperty(field)) {
+                                $errorsContainer.append('<p>' + errors[field].join(', ') + '</p>');
+                            }
+                        }
+                    }
+                },
+                error: function() {
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

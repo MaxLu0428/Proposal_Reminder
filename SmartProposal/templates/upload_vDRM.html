@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Upload vDRM Data{% endblock %}
+
+{% block content %}
+    <h1 class="mt-5">Upload vDRM Data</h1>
+    <div id="alert-area"></div>
+    <form id="upload-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+{% endblock %}
+
+{% block extra_script %}
+<script>
+    $(document).ready(function() {
+        $('#upload-form').on('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            $.ajax({
+                url: "{% url 'upload_vdrm' %}",
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    $('#alert-area').html('<div class="alert alert-success" role="alert">vDRM data updated successfully.</div>');
+                    setTimeout(function() {
+                        $('.alert').alert('close');
+                    }, 3000);
+                },
+                error: function() {
+                    $('#alert-area').html('<div class="alert alert-danger" role="alert">An error occurred while uploading the file.</div>');
+                    setTimeout(function() {
+                        $('.alert').alert('close');
+                    }, 3000);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

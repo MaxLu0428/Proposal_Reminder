@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Comparison for {{ obj.name }}{% endblock %}
+
+{% block extra_head %}
+<style>
+    .diff {
+        width: 100%;
+    }
+    .diff_add {
+        background-color: lightblue;
+    }
+    .diff_sub {
+        background-color: lightcoral;
+        text-decoration: line-through;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <h1 class="mt-5">Comparison for {{ obj.name }}</h1>
+    {% for difference in differences %}
+        <h2>Comparison with Document Number: {{ difference.document_number }}</h2>
+        <div class="diff">{{ difference.diff_html|safe }}</div>
+    {% endfor %}
+{% endblock %}
